@@ -4,6 +4,14 @@ margin: 0;
 padding: 0;
 border: 0;
 } */
+
+@import url('https://fonts.maateen.me/bangla/font.css');
+
+/* Now, add your other styles */
+.suneditiordiv {
+    font-family: 'Bangla', sans-serif;
+}
+
 .popmsg{
 
 
