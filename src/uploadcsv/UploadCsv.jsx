@@ -180,7 +180,7 @@ const [pareurl, setpareurl] = useState(null);
     
                 console.log("resxxc", response.data);
                 const responseData = { message: 'Data processed in Page B' };
-                window.parent.postMessage(responseData, pareurl); 
+                window.parent.postMessage(response?.data, pareurl); 
                 // window.parent.postMessage(responseData, 'http://localhost:3456/setting/clientRequest/campaign/marketingDashboard/marketingDashboardNew'); 
             }
         })
