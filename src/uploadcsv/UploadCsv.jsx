@@ -31,6 +31,9 @@ const UploadCsv = ({productName,folderName,getdata}) => {
     const[cdnlinkx,setcdnlinkx]=useState('')
     const[cdnStatus,setcdnStatus]=useState(null)
 
+    const [uploadedBytes, setUploadedBytes] = useState(0);
+const [totalBytes, setTotalBytes] = useState(0);
+
     const[supportedFileTypes,setsupportedFileTypes]=useState(['mp4', 'jpg', 'jpeg', 'png', 'skp', 'dwg', 'ppt', 'pptx', 'pdf', 'avi'])
 
 
@@ -42,7 +45,7 @@ const UploadCsv = ({productName,folderName,getdata}) => {
     const getCDNinfo = async() => {
           setcdnlinkx('http://178.128.82.148:5500/saveRequirementsFiles') 
         //   setcdnlinkx('https://filecdnapi.onrender.com/saveRequirementsFiles') 
-          //   setcdnlinkx('https://filecdnapi.vercel.app/saveRequirementsFiles')
+            // setcdnlinkx('https://filecdnapi.vercel.app/saveRequirementsFiles')
         };
   
     
@@ -140,17 +143,61 @@ const UploadCsv = ({productName,folderName,getdata}) => {
 
 
 
+       const uploadfile = async () => {                          
+        let data = new FormData();
+        data.append('folder_name', folderName); 
+        data.append("file", uploadFIle);
+        data.append('file_type', uploadfiletype);  
+        data.append('product_name', productName); 
+        data.append('cdnlink', cdnlinkx);
+        data.append('cdnstatus', cdnStatus);
+    
+        setTotalBytes(uploadFIle.size); // Set the total size of the file
+        setUploadedBytes(0); // Reset uploaded bytes
+    
+        axios.post(cdnlinkx, data, {
+            onUploadProgress: (progressEvent) => {
+                const { loaded, total } = progressEvent;
+                setUploadedBytes(loaded);
+                setTotalBytes(total);
+            }
+        })
+        .then((response) => {
+            console.log("file upload response---->", response);
+            setmessarray({ 'file title': uploadFIleName });
+            setcusloading(false);
+            setresCode(response?.data?.status);
+            setnotificationType('post');
+            setisopen(true);
+            
+            if (response.data.status === "success") {
+                setuploadres(true);
+                setresposeDatax(response.data);
+    
+                console.log("resxxc", response.data);
+                const responseData = { message: 'Data processed in Page B' };
+                window.parent.postMessage(responseData, 'http://localhost:3456/setting/clientRequest/campaign/marketingDashboard/marketingDashboardNew'); 
+            }
+        })
+        .catch((err) => {
+            setmessarray({ 'Technical error': 'please contact with IT' });
+            setcusloading(false);
+            setresCode('failed');
+            setnotificationType('post');
+            setisopen(true);
+        });
+    };
     
 
-    const uploadfile =async()=>{                          
+    // const uploadfile =async()=>{                          
 
-                let data = new FormData();
-                data.append('folder_name', folderName); 
-                data.append("file", uploadFIle);
-                data.append('file_type', uploadfiletype);  
-                data.append('product_name', productName); 
-                data.append('cdnlink',cdnlinkx)
-                data.append('cdnstatus',cdnStatus)
+    //             let data = new FormData();
+    //             data.append('folder_name', folderName); 
+    //             data.append("file", uploadFIle);
+    //             data.append('file_type', uploadfiletype);  
+    //             data.append('product_name', productName); 
+    //             data.append('cdnlink',cdnlinkx)
+    //             data.append('cdnstatus',cdnStatus)
 
 
 
@@ -158,35 +205,35 @@ const UploadCsv = ({productName,folderName,getdata}) => {
               
 
                       
-                axios.post(cdnlinkx, data) 
-                axios.post(cdnlinkx, data)  
-                      .then((response) => {
+    //             axios.post(cdnlinkx, data) 
+    //             axios.post(cdnlinkx, data)  
+    //                   .then((response) => {
 
-                            console.log("file upload response---->",response)
-                            setmessarray({'file title':uploadFIleName})
-                            setcusloading(false);
-                            setresCode(response?.data?.status)
-                            setnotificationType('post')
-                            setisopen(true)
-                        if (response.data.status === "success") {
-                            setuploadres(true)
-                            setresposeDatax(response.data)
+    //                         console.log("file upload response---->",response)
+    //                         setmessarray({'file title':uploadFIleName})
+    //                         setcusloading(false);
+    //                         setresCode(response?.data?.status)
+    //                         setnotificationType('post')
+    //                         setisopen(true)
+    //                     if (response.data.status === "success") {
+    //                         setuploadres(true)
+    //                         setresposeDatax(response.data)
 
-                            console.log("resxxc",response.data)
-                            const responseData = { message: 'Data processed in Page B' };
-                            window.parent.postMessage(responseData, 'http://localhost:3456/setting/clientRequest/campaign/marketingDashboard/marketingDashboardNew'); 
+    //                         console.log("resxxc",response.data)
+    //                         const responseData = { message: 'Data processed in Page B' };
+    //                         window.parent.postMessage(responseData, 'http://localhost:3456/setting/clientRequest/campaign/marketingDashboard/marketingDashboardNew'); 
                            
-                        }
-                    })
-                    .catch((err) => {
-                        setmessarray({'Technical error':'please contact with IT'})
-                        setcusloading(false);
-                        setresCode('failed')
-                        setnotificationType('post')
-                        setisopen(true)
-                    });
+    //                     }
+    //                 })
+    //                 .catch((err) => {
+    //                     setmessarray({'Technical error':'please contact with IT'})
+    //                     setcusloading(false);
+    //                     setresCode('failed')
+    //                     setnotificationType('post')
+    //                     setisopen(true)
+    //                 });
         
-    }
+    // }
 
     const removeItem =()=>{
         setcusloading(false);
@@ -209,7 +256,14 @@ const UploadCsv = ({productName,folderName,getdata}) => {
   
   return (
     <>
-     <RecordLoading isloading={cusloading} loadingtype={cusloadingtype}  loadingtext={cusloadingtext}/>
+     {/* <RecordLoading isloading={cusloading} loadingtype={cusloadingtype}  loadingtext={cusloadingtext}/> */}
+     <RecordLoading 
+        isloading={cusloading} 
+        loadingtype={cusloadingtype}
+        loadingtext={cusloadingtext}
+        uploadedBytes={uploadedBytes} 
+        totalBytes={totalBytes} 
+        />
  
             {isopen === true?
             <CommonDialogueBox  returnMessage={getclosemsg}
