@@ -39,16 +39,17 @@ const [totalBytes, setTotalBytes] = useState(0);
 
 
     useEffect(() => {
-        getCDNinfo()
+        const queryParams = new URLSearchParams(location.search);
+        const productName = queryParams.get('productName'); 
+        const folderName = queryParams.get('folderName'); 
+        const fullURL = window.location.href;
+        console.log("geturlanddata",{'productName':productName,'folderName':folderName,'fullURL':fullURL})
+        setcdnlinkx('https://cdnbackend.onrender.com/saveRequirementsFiles') 
+        setcdnStatus('success')
+  
     }, [productName,folderName,getdata])
     
-    const getCDNinfo = async() => {https://cdnbackend.onrender.com/
-          setcdnlinkx('https://cdnbackend.onrender.com/saveRequirementsFiles') 
-        //   setcdnlinkx('http://178.128.82.148:5500/saveRequirementsFiles') 
-        //   setcdnlinkx('https://filecdnapi.onrender.com/saveRequirementsFiles') 
-            // setcdnlinkx('https://filecdnapi.vercel.app/saveRequirementsFiles')
-        };
-  
+
     
     const handleFileUpoad = async (e) => {
 
@@ -245,14 +246,7 @@ const [totalBytes, setTotalBytes] = useState(0);
 
     }
 
-    useEffect(() => {
-        const queryParams = new URLSearchParams(location.search);
-        const productName = queryParams.get('productName'); 
-        const folderName = queryParams.get('folderName'); 
-        console.log("sadasdasd",productName,folderName)
-        setcdnStatus('success')
-
-      }, []); 
+  
 
   
   return (
