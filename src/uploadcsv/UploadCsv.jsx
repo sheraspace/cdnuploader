@@ -33,6 +33,7 @@ const UploadCsv = ({productName,folderName,getdata}) => {
 
     const [uploadedBytes, setUploadedBytes] = useState(0);
 const [totalBytes, setTotalBytes] = useState(0);
+const [pareurl, setpareurl] = useState(null);
 
     const[supportedFileTypes,setsupportedFileTypes]=useState(['mp4', 'jpg', 'jpeg', 'png', 'skp', 'dwg', 'ppt', 'pptx', 'pdf', 'avi'])
 
@@ -42,7 +43,8 @@ const [totalBytes, setTotalBytes] = useState(0);
         const queryParams = new URLSearchParams(location.search);
         const productName = queryParams.get('productName'); 
         const folderName = queryParams.get('folderName'); 
-        const fullURL = window.location.href;
+        const parenturl = queryParams.get('parent_url'); 
+        setpareurl(parenturl)
         console.log("geturlanddata",{'productName':productName,'folderName':folderName,'fullURL':fullURL})
         setcdnlinkx('https://cdnbackend.onrender.com/saveRequirementsFiles') 
         setcdnStatus('success')
@@ -178,7 +180,8 @@ const [totalBytes, setTotalBytes] = useState(0);
     
                 console.log("resxxc", response.data);
                 const responseData = { message: 'Data processed in Page B' };
-                window.parent.postMessage(responseData, 'http://localhost:3456/setting/clientRequest/campaign/marketingDashboard/marketingDashboardNew'); 
+                window.parent.postMessage(responseData, pareurl); 
+                // window.parent.postMessage(responseData, 'http://localhost:3456/setting/clientRequest/campaign/marketingDashboard/marketingDashboardNew'); 
             }
         })
         .catch((err) => {
