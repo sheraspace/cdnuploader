@@ -42,8 +42,9 @@ const [totalBytes, setTotalBytes] = useState(0);
         getCDNinfo()
     }, [productName,folderName,getdata])
     
-    const getCDNinfo = async() => {
-          setcdnlinkx('http://178.128.82.148:5500/saveRequirementsFiles') 
+    const getCDNinfo = async() => {https://cdnbackend.onrender.com/
+          setcdnlinkx('https://cdnbackend.onrender.com/saveRequirementsFiles') 
+        //   setcdnlinkx('http://178.128.82.148:5500/saveRequirementsFiles') 
         //   setcdnlinkx('https://filecdnapi.onrender.com/saveRequirementsFiles') 
             // setcdnlinkx('https://filecdnapi.vercel.app/saveRequirementsFiles')
         };
