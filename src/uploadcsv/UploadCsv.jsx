@@ -45,7 +45,7 @@ const [pareurl, setpareurl] = useState(null);
         const folderName = queryParams.get('folderName'); 
         const parenturl = queryParams.get('parent_url'); 
         setpareurl(parenturl)
-        console.log("geturlanddata",{'productName':productName,'folderName':folderName,'fullURL':fullURL})
+        console.log("geturlanddata",{'productName':productName,'folderName':folderName,'fullURL':parenturl})
         setcdnlinkx('https://cdnbackend.onrender.com/saveRequirementsFiles') 
         setcdnStatus('success')
   
