@@ -177,10 +177,11 @@ const [pareurl, setpareurl] = useState(null);
             if (response.data.status === "success") {
                 setuploadres(true);
                 setresposeDatax(response.data);
+
+                let dv={'res':response.data,'file':uploadFIle}
     
                 console.log("resxxc", response.data);
-                const responseData = { message: 'Data processed in Page B' };
-                window.parent.postMessage(response?.data, pareurl); 
+                window.parent.postMessage(dv, pareurl); 
                 // window.parent.postMessage(responseData, 'http://localhost:3456/setting/clientRequest/campaign/marketingDashboard/marketingDashboardNew'); 
             }
         })
