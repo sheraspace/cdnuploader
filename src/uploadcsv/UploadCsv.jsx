@@ -5,7 +5,7 @@ import RecordLoading from './RecordLoading';
 import CommonDialogueBox from './CommonDialogueBox';
 
 
-const UploadCsv = ({productName,folderName,getdata}) => {
+const UploadCsv = () => {
    
     const[cusloading,setcusloading]=useState(false)
     const[isopen,setisopen]=useState(false)
@@ -31,11 +31,18 @@ const UploadCsv = ({productName,folderName,getdata}) => {
     const[cdnlinkx,setcdnlinkx]=useState('')
     const[cdnStatus,setcdnStatus]=useState(null)
 
-    const [uploadedBytes, setUploadedBytes] = useState(0);
-const [totalBytes, setTotalBytes] = useState(0);
-const [pareurl, setpareurl] = useState(null);
 
-    const[supportedFileTypes,setsupportedFileTypes]=useState(['mp4', 'jpg', 'jpeg', 'png', 'skp', 'dwg', 'ppt', 'pptx', 'pdf', 'avi'])
+
+    const[productName,setproductName]=useState(null)
+    const[folderName,setfolderName]=useState(null)
+    const[postapi,setpostapi]=useState(null)
+    const[datasendobj,setdatasendobj]=useState()
+
+    const [uploadedBytes, setUploadedBytes] = useState(0);
+    const [totalBytes, setTotalBytes] = useState(0);
+    const [uid, setuid] = useState(null);
+
+    const[supportedFileTypes,setsupportedFileTypes]=useState(['skp'])
 
 
 
@@ -43,14 +50,25 @@ const [pareurl, setpareurl] = useState(null);
         const queryParams = new URLSearchParams(location.search);
         const productName = queryParams.get('productName'); 
         const folderName = queryParams.get('folderName'); 
-        const parenturl = queryParams.get('parent_url'); 
-        setpareurl(parenturl)
-        console.log("geturlanddata",{'productName':productName,'folderName':folderName,'fullURL':parenturl})
+        const postapi = queryParams.get('postapi'); 
+        const objectdata = queryParams.get('objectdata'); 
+        const dataobjectx = JSON.parse(objectdata);
+        setuid(queryParams.get('uid')) 
+        // setpareurl(parenturl)
+        setproductName(productName)
+        setfolderName(folderName)
+        setpostapi(postapi)
+        setdatasendobj(dataobjectx)
+        console.log("geturlanddata",{'productName':productName,'folderName':folderName,'postapi':postapi,'objectxx':dataobjectx})
+        // setcdnlinkx('http://127.0.0.1:5001/saveRequirementsFiles') 
         setcdnlinkx('https://cdnbackend.onrender.com/saveRequirementsFiles') 
         setcdnStatus('success')
-  
-    }, [productName,folderName,getdata])
+
+
+        
+    }, [productName,folderName])
     
+
 
     
     const handleFileUpoad = async (e) => {
@@ -74,7 +92,7 @@ const [pareurl, setpareurl] = useState(null);
         setuploadSize(filesize.toFixed(2))
         setuploadType(filetype)
        if (!supportedFileTypes.includes(filetype)) {
-            setcustomerrormsg('Unsupported file type. Supported types: mp4, jpg, jpeg, png, skp, dwg, ppt, pptx, pdf, avi.');
+            setcustomerrormsg('Unsupported file type. Supported types: skp');
         } else {
             if (['mp4', 'avi'].includes(filetype)) {
                 setuploadfiletype('video')
@@ -115,7 +133,7 @@ const [pareurl, setpareurl] = useState(null);
 				if(returnactionType === 'close'){
 					setisopen(false)
                     if(notificationType === 'post' && uploadres === true){
-                        getdata({'res':resposeDatax,'file':uploadFIle})
+                        // getdata({'res':resposeDatax,'file':uploadFIle})
                     }
 				}else if (returnactionType === "submit"){
 					console.log("parse msg"," savae data")
@@ -146,6 +164,48 @@ const [pareurl, setpareurl] = useState(null);
        }
 
 
+       const savedata=(url)=>{
+        setcusloadingtext('file upload was successfull,now data is saving ...')
+
+        console.log("urlssss",url,datasendobj)
+         axios.post( 'https://api.palettebd.com/api/v1/projectDesign/savethisdesign', {
+            companyId: datasendobj.companyId,
+            salesLeadPhone: datasendobj.salesLeadPhone,
+            categoryId: datasendobj.categoryId,
+            projectId:datasendobj.projectId,
+            designId: datasendobj.designId,
+            fileName: uploadFIleName,
+            fileSize: uploadSize,
+            // dateOfToday: this.state.dateOfToday,
+            styleCheckedList: datasendobj.styleCheckedList,
+            isSlide:datasendobj.isSlide,
+            isEmailClient:datasendobj.isEmailClient,
+            refUrl: datasendobj.refUrl,
+            imagepath:url,
+            createdBy:datasendobj.createdBy
+        },  {}  )
+            .then((response) => {
+                setmessarray({ 'file title': uploadFIleName });
+                setcusloading(false);
+                setresCode(response?.data?.status);
+                setnotificationType('post');
+                setisopen(true);
+                console.log("response for save design",response);
+               
+                if (response.data.status === "success") {
+                    setuploadres(true);
+                    setresposeDatax(response.data);
+                    console.log("resxxc", response.data);
+                }
+                if (response.data.status === "failed") {
+
+                }
+            }).catch((error)=>{  console.log("error",error);   });
+
+
+     }
+
+
 
        const uploadfile = async () => {                          
         let data = new FormData();
@@ -155,9 +215,8 @@ const [pareurl, setpareurl] = useState(null);
         data.append('product_name', productName); 
         data.append('cdnlink', cdnlinkx);
         data.append('cdnstatus', cdnStatus);
-    
-        setTotalBytes(uploadFIle.size); // Set the total size of the file
-        setUploadedBytes(0); // Reset uploaded bytes
+        setTotalBytes(uploadFIle.size);
+        setUploadedBytes(0); 
     
         axios.post(cdnlinkx, data, {
             onUploadProgress: (progressEvent) => {
@@ -168,21 +227,10 @@ const [pareurl, setpareurl] = useState(null);
         })
         .then((response) => {
             console.log("file upload response---->", response);
-            setmessarray({ 'file title': uploadFIleName });
-            setcusloading(false);
-            setresCode(response?.data?.status);
-            setnotificationType('post');
-            setisopen(true);
-            
+           
             if (response.data.status === "success") {
-                setuploadres(true);
-                setresposeDatax(response.data);
-
-                let dv={'res':response.data,'file':uploadFIle}
-    
-                console.log("resxxc", response.data);
-                window.parent.postMessage(dv, pareurl); 
-                // window.parent.postMessage(responseData, 'http://localhost:3456/setting/clientRequest/campaign/marketingDashboard/marketingDashboardNew'); 
+               
+                savedata(response.data?.fileurl)
             }
         })
         .catch((err) => {
@@ -250,12 +298,10 @@ const [pareurl, setpareurl] = useState(null);
 
     }
 
-  
-
-  
+ 
   return (
     <>
-     {/* <RecordLoading isloading={cusloading} loadingtype={cusloadingtype}  loadingtext={cusloadingtext}/> */}
+     <RecordLoading isloading={cusloading} loadingtype={cusloadingtype}  loadingtext={cusloadingtext}/>
      <RecordLoading 
         isloading={cusloading} 
         loadingtype={cusloadingtype}
@@ -264,7 +310,7 @@ const [pareurl, setpareurl] = useState(null);
         totalBytes={totalBytes} 
         />
  
-            {isopen === true?
+            {isopen === true? 
             <CommonDialogueBox  returnMessage={getclosemsg}
             serviceRequestType={serviceRequestType} 
             open={isopen} 
