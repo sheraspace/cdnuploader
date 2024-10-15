@@ -158,7 +158,7 @@ const UploadCsv = () => {
              setactionType('save');
              setnotificationType('pre');
              setisopen(true);
-             setserviceRequestType('File upload')
+            //  setserviceRequestType('File upload')
              setmessarray(d)
           } 
        }
@@ -166,6 +166,7 @@ const UploadCsv = () => {
 
        const savedata=(url)=>{
         setcusloadingtext('file upload was successfull,now data is saving ...')
+        setserviceRequestType('data save')
 
         console.log("urlssss",url,datasendobj)
          axios.post( 'https://api.palettebd.com/api/v1/projectDesign/savethisdesign', {
@@ -207,7 +208,8 @@ const UploadCsv = () => {
 
 
 
-       const uploadfile = async () => {                          
+       const uploadfile = async () => {      
+        setserviceRequestType('file upload')
         let data = new FormData();
         data.append('folder_name', folderName); 
         data.append("file", uploadFIle);
