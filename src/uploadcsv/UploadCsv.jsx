@@ -231,6 +231,12 @@ const UploadCsv = () => {
             if (response.data.status === "success") {
                
                 savedata(response.data?.fileurl)
+            }else{
+                setmessarray({ 'file title': uploadFIleName });
+                setcusloading(false);
+                setresCode(response?.data?.status);
+                setnotificationType('post');
+                setisopen(true);
             }
         })
         .catch((err) => {
